@@ -16,6 +16,7 @@ object Padding {
 
     sealed class PaddingError(message: String) : Exception(message) {
         data object TruncatedHeader : PaddingError("padded buffer is shorter than its header")
+
         data object LengthExceedsBuffer : PaddingError("declared length exceeds the buffer")
     }
 

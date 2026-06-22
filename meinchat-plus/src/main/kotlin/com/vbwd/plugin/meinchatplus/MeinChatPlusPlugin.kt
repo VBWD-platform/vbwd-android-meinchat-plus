@@ -24,15 +24,16 @@ import com.vbwd.plugin.meinchatplus.domain.StubSecureMessaging
  * (mirrors the iOS `#if canImport(LibSignalClient)` gate).
  */
 class MeinChatPlusPlugin : Plugin {
-    override val metadata = PluginMetadata(
-        name = "meinchat-plus",
-        version = SemanticVersion(0, 2, 0),
-        description = "End-to-end encrypted messaging — Signal ratchet over meinchat.",
-        author = "VBWD",
-        keywords = listOf("chat", "messaging", "e2e", "signal", "meinchat"),
-        dependencies = PluginDependencies.List(listOf("meinchat")),
-        translations = mapOf("en" to TRANSLATIONS),
-    )
+    override val metadata =
+        PluginMetadata(
+            name = "meinchat-plus",
+            version = SemanticVersion(0, 2, 0),
+            description = "End-to-end encrypted messaging — Signal ratchet over meinchat.",
+            author = "VBWD",
+            keywords = listOf("chat", "messaging", "e2e", "signal", "meinchat"),
+            dependencies = PluginDependencies.List(listOf("meinchat")),
+            translations = mapOf("en" to TRANSLATIONS),
+        )
 
     override suspend fun install(sdk: PlatformSdk) {
         // HTTP wire services — usable today against the S28.3b backend.
@@ -47,10 +48,11 @@ class MeinChatPlusPlugin : Plugin {
     }
 
     private companion object {
-        val TRANSLATIONS = mapOf(
-            "meinchat_plus.title" to "Secure Messaging",
-            "meinchat_plus.pair" to "Pair this device",
-            "meinchat_plus.not_ready" to "Secure messaging not yet available on this build.",
-        )
+        val TRANSLATIONS =
+            mapOf(
+                "meinchat_plus.title" to "Secure Messaging",
+                "meinchat_plus.pair" to "Pair this device",
+                "meinchat_plus.not_ready" to "Secure messaging not yet available on this build.",
+            )
     }
 }

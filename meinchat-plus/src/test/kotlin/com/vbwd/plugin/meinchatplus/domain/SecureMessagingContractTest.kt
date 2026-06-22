@@ -27,7 +27,8 @@ class SecureMessagingContractTest {
     fun `stub honours the fail-closed contract`() = runTest { assertFailClosed(StubSecureMessaging()) }
 
     @Test
-    fun `signal (pending libsignal) honours the fail-closed contract`() = runTest {
-        assertFailClosed(SignalSecureMessaging())
-    }
+    fun `signal (pending libsignal) honours the fail-closed contract`() =
+        runTest {
+            assertFailClosed(SignalSecureMessaging())
+        }
 }

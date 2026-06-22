@@ -12,6 +12,7 @@ data class Envelope(val v: Int = 1, val perRecipient: List<Slot>) {
                 header.contentEquals(other.header) &&
                 ciphertext.contentEquals(other.ciphertext)
         }
+
         override fun hashCode(): Int =
             (deviceId.hashCode() * HASH_PRIME + header.contentHashCode()) * HASH_PRIME + ciphertext.contentHashCode()
 
@@ -31,10 +32,15 @@ data class Envelope(val v: Int = 1, val perRecipient: List<Slot>) {
 object EnvelopePacker {
     sealed class EnvelopeError(message: String) : Exception(message) {
         data object Truncated : EnvelopeError("truncated input")
+
         data object WrongType : EnvelopeError("unexpected CBOR major type")
+
         data object KeyNotText : EnvelopeError("map key is not text")
+
         data object LengthExceedsBuffer : EnvelopeError("length exceeds buffer")
+
         data class MissingKey(val key: String) : EnvelopeError("missing key: $key")
+
         data class UnsupportedLengthEncoding(val info: Int) : EnvelopeError("bad length encoding: $info")
     }
 
@@ -86,11 +92,17 @@ object EnvelopePacker {
             }
         }
         return Envelope.Slot(
-            deviceId = deviceId ?: throw EnvelopeError.MissingKey("device_id"),
-            header = header ?: throw EnvelopeError.MissingKey("header"),
-            ciphertext = ciphertext ?: throw EnvelopeError.MissingKey("ciphertext"),
+            deviceId = required(deviceId, "device_id"),
+            header = required(header, "header"),
+            ciphertext = required(ciphertext, "ciphertext"),
         )
     }
+
+    /** A present value or [EnvelopeError.MissingKey] — keeps callers single-throw. */
+    private fun <T : Any> required(
+        value: T?,
+        key: String,
+    ): T = value ?: throw EnvelopeError.MissingKey(key)
 
     private fun cborText(s: String): ByteArray {
         val bytes = s.toByteArray(Charsets.UTF_8)
@@ -99,27 +111,33 @@ object EnvelopePacker {
 
     private fun cborBytes(d: ByteArray): ByteArray = typed(major = 2, value = d.size.toLong()) + d
 
-    private fun typed(major: Int, value: Long): ByteArray {
+    private fun typed(
+        major: Int,
+        value: Long,
+    ): ByteArray {
         val prefix = (major shl 5)
         return when {
             value < 24 -> byteArrayOf((prefix or value.toInt()).toByte())
             value <= 0xFF -> byteArrayOf((prefix or 24).toByte(), value.toByte())
-            value <= 0xFFFF -> byteArrayOf(
-                (prefix or 25).toByte(),
-                (value shr 8).toByte(),
-                value.toByte(),
-            )
-            value <= 0xFFFFFFFFL -> byteArrayOf(
-                (prefix or 26).toByte(),
-                (value shr 24).toByte(),
-                (value shr 16).toByte(),
-                (value shr 8).toByte(),
-                value.toByte(),
-            )
-            else -> ByteArray(9).also { buf ->
-                buf[0] = (prefix or 27).toByte()
-                for (i in 0 until 8) buf[8 - i] = (value shr (i * 8)).toByte()
-            }
+            value <= 0xFFFF ->
+                byteArrayOf(
+                    (prefix or 25).toByte(),
+                    (value shr 8).toByte(),
+                    value.toByte(),
+                )
+            value <= 0xFFFFFFFFL ->
+                byteArrayOf(
+                    (prefix or 26).toByte(),
+                    (value shr 24).toByte(),
+                    (value shr 16).toByte(),
+                    (value shr 8).toByte(),
+                    value.toByte(),
+                )
+            else ->
+                ByteArray(9).also { buf ->
+                    buf[0] = (prefix or 27).toByte()
+                    for (i in 0 until 8) buf[8 - i] = (value shr (i * 8)).toByte()
+                }
         }
     }
 
@@ -159,9 +177,13 @@ object EnvelopePacker {
         }
 
         fun readMap(): Long = expect(5)
+
         fun readArray(): Long = expect(4)
+
         fun readUInt(): Long = expect(0)
+
         fun readBytes(): ByteArray = readRaw(expect(2).toInt())
+
         fun readText(): String {
             val (major, count) = readHeader()
             if (major != 3) throw EnvelopeError.KeyNotText

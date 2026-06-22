@@ -24,8 +24,13 @@ private class FakeApi : ApiClient {
         jsonBody: String?,
         deserializer: DeserializationStrategy<T>,
     ): T = EmptyResponse() as T
+
     override fun setToken(token: String?) = Unit
-    override fun on(event: ApiEvent, handler: () -> Unit) = Unit
+
+    override fun on(
+        event: ApiEvent,
+        handler: () -> Unit,
+    ) = Unit
 }
 
 class MeinChatPlusPluginContractTest {
@@ -40,10 +45,11 @@ class MeinChatPlusPluginContractTest {
     }
 
     @Test
-    fun `install registers a fail-closed secure-messaging impl under the meinchat seam`() = runTest {
-        val platform = sdk()
-        MeinChatPlusPlugin().install(platform)
-        val registered = platform.getStores()[MeinChatSecureMessagingStoreId]
-        assertTrue(registered is MeinChatSecureMessaging)
-    }
+    fun `install registers a fail-closed secure-messaging impl under the meinchat seam`() =
+        runTest {
+            val platform = sdk()
+            MeinChatPlusPlugin().install(platform)
+            val registered = platform.getStores()[MeinChatSecureMessagingStoreId]
+            assertTrue(registered is MeinChatSecureMessaging)
+        }
 }

@@ -8,9 +8,13 @@ package com.vbwd.plugin.meinchatplus.domain
 sealed class E2eGuardError(message: String) : Exception(message) {
     data class ProtocolDowngrade(val serverProtocol: String) :
         E2eGuardError("server downgraded to '$serverProtocol' when e2e_v1 was required")
+
     data object NoPeerDeviceKeys : E2eGuardError("peer has no active device keys")
+
     data object NoSlotForThisDevice : E2eGuardError("no envelope slot for this device")
+
     data object ConversationIsNotE2e : E2eGuardError("conversation is not e2e_v1")
+
     data object NotAnE2eMessage : E2eGuardError("message is not an e2e_v1 row")
 }
 

@@ -10,8 +10,11 @@ import kotlinx.serialization.Serializable
 /** Signed + one-time prekey pools (S28.3b §2.2-2.5). Port of the iOS service. */
 interface PrekeyService {
     suspend fun publishSigned(key: SignedPrekey)
+
     suspend fun publishOneTimeBatch(keys: List<OneTimePrekey>)
+
     suspend fun fetchStatus(): PrekeyStatus
+
     suspend fun needsRefill(): Boolean
 }
 
@@ -19,7 +22,6 @@ class DefaultPrekeyService(
     private val api: ApiClient,
     private val fallbackLowWaterFraction: Double = DEFAULT_LOW_WATER_FRACTION,
 ) : PrekeyService {
-
     override suspend fun publishSigned(key: SignedPrekey) {
         api.post<SignedBody, EmptyResponse>(
             MeinChatPlusEndpoints.SIGNED_PREKEY,
@@ -42,7 +44,11 @@ class DefaultPrekeyService(
     }
 
     @Serializable
-    private data class SignedBody(val id: Int, @SerialName("public_key") val publicKey: String, val signature: String)
+    private data class SignedBody(
+        val id: Int,
+        @SerialName("public_key") val publicKey: String,
+        val signature: String,
+    )
 
     @Serializable
     private data class OneTimeBody(val keys: List<OneTimePrekey>)

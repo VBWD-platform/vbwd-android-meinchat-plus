@@ -19,26 +19,30 @@ class PrekeyServiceTest {
     }
 
     @Test
-    fun `needsRefill honours the server low-water mark`() = runTest {
-        stubStatus(PrekeyStatus(oneTimeRemaining = 3, oneTimeCapacity = 100, lowWaterMark = 5))
-        assertTrue(service.needsRefill())
-    }
+    fun `needsRefill honours the server low-water mark`() =
+        runTest {
+            stubStatus(PrekeyStatus(oneTimeRemaining = 3, oneTimeCapacity = 100, lowWaterMark = 5))
+            assertTrue(service.needsRefill())
+        }
 
     @Test
-    fun `needsRefill is false above the mark`() = runTest {
-        stubStatus(PrekeyStatus(oneTimeRemaining = 50, oneTimeCapacity = 100, lowWaterMark = 5))
-        assertFalse(service.needsRefill())
-    }
+    fun `needsRefill is false above the mark`() =
+        runTest {
+            stubStatus(PrekeyStatus(oneTimeRemaining = 50, oneTimeCapacity = 100, lowWaterMark = 5))
+            assertFalse(service.needsRefill())
+        }
 
     @Test
-    fun `needsRefill falls back to 20 percent when no mark is supplied`() = runTest {
-        stubStatus(PrekeyStatus(oneTimeRemaining = 15, oneTimeCapacity = 100, lowWaterMark = null))
-        assertTrue(service.needsRefill()) // 15 <= 20
-    }
+    fun `needsRefill falls back to 20 percent when no mark is supplied`() =
+        runTest {
+            stubStatus(PrekeyStatus(oneTimeRemaining = 15, oneTimeCapacity = 100, lowWaterMark = null))
+            assertTrue(service.needsRefill()) // 15 <= 20
+        }
 
     @Test
-    fun `fetchStatus returns the pool status`() = runTest {
-        stubStatus(PrekeyStatus(oneTimeRemaining = 97, oneTimeCapacity = 100))
-        assertEquals(97, service.fetchStatus().oneTimeRemaining)
-    }
+    fun `fetchStatus returns the pool status`() =
+        runTest {
+            stubStatus(PrekeyStatus(oneTimeRemaining = 97, oneTimeCapacity = 100))
+            assertEquals(97, service.fetchStatus().oneTimeRemaining)
+        }
 }

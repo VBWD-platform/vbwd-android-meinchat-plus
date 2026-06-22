@@ -15,10 +15,14 @@ class SecureMessagingNotReadyException :
  */
 class StubSecureMessaging : MeinChatSecureMessaging {
     override suspend fun isReady(): Boolean = false
-    override suspend fun sendSecure(plaintext: String, conversation: Conversation): ChatMessage =
-        throw SecureMessagingNotReadyException()
-    override suspend fun decryptIncoming(message: ChatMessage): String =
-        throw SecureMessagingNotReadyException()
+
+    override suspend fun sendSecure(
+        plaintext: String,
+        conversation: Conversation,
+    ): ChatMessage = throw SecureMessagingNotReadyException()
+
+    override suspend fun decryptIncoming(message: ChatMessage): String = throw SecureMessagingNotReadyException()
+
     override suspend fun peerCanReceiveE2E(userId: String): Boolean = false
 }
 
@@ -36,9 +40,13 @@ class StubSecureMessaging : MeinChatSecureMessaging {
  */
 class SignalSecureMessaging : MeinChatSecureMessaging {
     override suspend fun isReady(): Boolean = false
-    override suspend fun sendSecure(plaintext: String, conversation: Conversation): ChatMessage =
-        throw SecureMessagingNotReadyException()
-    override suspend fun decryptIncoming(message: ChatMessage): String =
-        throw SecureMessagingNotReadyException()
+
+    override suspend fun sendSecure(
+        plaintext: String,
+        conversation: Conversation,
+    ): ChatMessage = throw SecureMessagingNotReadyException()
+
+    override suspend fun decryptIncoming(message: ChatMessage): String = throw SecureMessagingNotReadyException()
+
     override suspend fun peerCanReceiveE2E(userId: String): Boolean = false
 }
